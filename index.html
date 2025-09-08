@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CourseHub Infinity - Nơi tri thức là vô hạn và miễn phí</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --accent-neon: #00ffff;
+            --accent-purple: #9d4edd;
+            --accent-green: #39ff14;
+            --text-primary: #ffffff;
+            --text-secondary: #b8b8b8;
+            --border-glow: rgba(0, 255, 255, 0.3);
+        }
+
+        body {
+            font-family: 'Fira Code', monospace;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            cursor: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><text y="15" font-size="12" fill="%2300ffff">_</text></svg>'), auto;
+            overflow-x: hidden;
+        }
+
+        .cursor-pointer {
+            cursor: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><text y="15" font-size="14" fill="%2300ffff">▶</text></svg>'), pointer;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--accent-neon);
+            animation: float 10s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) translateX(0px); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) translateX(100px); opacity: 0; }
+        }
+
+        /* Header */
+        header {
+            background: rgba(26, 26, 46, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-glow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-neon);
+            text-shadow: 0 0 10px var(--accent-neon);
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: 1px solid var(--accent-neon);
+            color: var(--accent-neon);
+            padding: 0.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background: var(--accent-neon);
+            color: var(--bg-primary);
+            box-shadow: 0 0 15px var(--accent-neon);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-family: inherit;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, var(--accent-purple), var(--accent-neon));
+            color: white;
+            border: 1px solid transparent;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--accent-neon);
+            border: 1px solid var(--accent-neon);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 255, 255, 0.3);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        /* Main Content */
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--accent-neon), var(--accent-purple), var(--accent-green));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glow-text 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow-text {
+            from { text-shadow: 0 0 20px rgba(0, 255, 255, 0.5); }
+            to { text-shadow: 0 0 30px rgba(157, 78, 221, 0.8); }
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        /* Search Section */
+        .search-section {
+            margin-bottom: 3rem;
+        }
+
+        .search-container {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            background: var(--bg-card);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-neon);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent-neon);
+        }
+
+        /* Course Grid */
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: var(--accent-neon);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .section-title::before,
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--accent-neon), transparent);
+        }
+
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .course-card {
+            background: var(--bg-card);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 255, 255, 0.1);
+            transition: all 0.4s ease;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .course-card:hover {
+            transform: perspective(1000px) rotateY(10deg) rotateX(5deg) translateY(-10px);
+            border-color: var(--accent-neon);
+            box-shadow: 0 20px 40px rgba(0, 255, 255, 0.2);
+        }
+
+        .course-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-neon), var(--accent-purple), var(--accent-green));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .course-card:hover::before {
+            opacity: 1;
+        }
+
+        .course-image {
+            height: 200px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-neon));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+            position: relative;
+        }
+
+        .course-image::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .course-content {
+            padding: 1.5rem;
+        }
+
+        .course-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .course-author {
+            color: var(--accent-neon);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .course-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .course-category {
+            background: rgba(0, 255, 255, 0.1);
+            color: var(--accent-neon);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            border: 1px solid var(--accent-neon);
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: var(--accent-neon);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--bg-primary);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-neon);
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        }
+
+        /* Auth Forms */
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 2rem;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 1rem;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .auth-tab.active {
+            color: var(--accent-neon);
+            border-bottom-color: var(--accent-neon);
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .course-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Light Theme */
+        .light-theme {
+            --bg-primary: #f8f9fa;
+            --bg-secondary: #e9ecef;
+            --bg-card: #ffffff;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --border-glow: rgba(0, 123, 255, 0.3);
+        }
+
+        .light-theme body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--accent-neon);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation" id="bgAnimation"></div>
+
+    <header>
+        <nav>
+            <div class="logo">CourseHub∞</div>
+            <div class="nav-buttons">
+                <button class="theme-toggle cursor-pointer" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="btn btn-secondary cursor-pointer" id="loginBtn">
+                    <i class="fas fa-sign-in-alt"></i> Đăng nhập
+                </button>
+                <button class="btn btn-primary cursor-pointer" id="uploadBtn">
+                    <i class="fas fa-plus"></i> Đăng tải khóa học
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1 class="pulse">CourseHub Infinity</h1>
+            <p>🚀 Nơi tri thức là vô hạn và miễn phí 🚀</p>
+            <p>Khám phá hàng ngàn khóa học chất lượng cao từ cộng đồng developer</p>
+        </section>
+
+        <section class="search-section">
+            <div class="search-container">
+                <div class="search-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <input type="text" class="search-input cursor-pointer" placeholder="Tìm kiếm khóa học... (React, Python, JavaScript, AI...)" id="searchInput">
+            </div>
+        </section>
+
+        <section>
+            <h2 class="section-title">
+                <i class="fas fa-fire"></i>
+                Khóa học hot nhất
+            </h2>
+            <div class="course-grid" id="courseGrid">
+                <!-- Courses will be dynamically loaded here -->
+            </div>
+        </section>
+
+        <section>
+            <h2 class="section-title">
+                <i class="fas fa-clock"></i>
+                Mới nhất
+            </h2>
+            <div class="course-grid" id="recentCourses">
+                <!-- Recent courses will be loaded here -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Login/Register Modal -->
+    <div class="modal" id="authModal">
+        <div class="modal-content">
+            <button class="modal-close cursor-pointer" id="closeAuthModal">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="auth-tabs">
+                <button class="auth-tab active cursor-pointer" data-tab="login">Đăng nhập</button>
+                <button class="auth-tab cursor-pointer" data-tab="register">Đăng ký</button>
+            </div>
+
+            <form class="auth-form active" id="loginForm">
+                <div class="form-group">
+                    <label>Email hoặc tên đăng nhập</label>
+                    <input type="text" required placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Mật khẩu</label>
+                    <input type="password" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn btn-primary cursor-pointer" style="width: 100%;">
+                    <i class="fas fa-sign-in-alt"></i> Đăng nhập
+                </button>
+            </form>
+
+            <form class="auth-form" id="registerForm">
+                <div class="form-group">
+                    <label>Tên đăng nhập</label>
+                    <input type="text" required placeholder="devmaster123">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" required placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Mật khẩu</label>
+                    <input type="password" required placeholder="••••••••">
+                </div>
+                <div class="form-group">
+                    <label>Xác nhận mật khẩu</label>
+                    <input type="password" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn btn-primary cursor-pointer" style="width: 100%;">
+                    <i class="fas fa-user-plus"></i> Đăng ký
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Upload Course Modal -->
+    <div class="modal" id="uploadModal">
+        <div class="modal-content">
+            <button class="modal-close cursor-pointer" id="closeUploadModal">
+                <i class="fas fa-times"></i>
+            </button>
+            <h3 style="margin-bottom: 2rem; color: var(--accent-neon);">
+                <i class="fas fa-upload"></i> Đăng tải khóa học mới
+            </h3>
+            
+            <form id="uploadForm">
+                <div class="form-group">
+                    <label>Tên khóa học</label>
+                    <input type="text" required placeholder="VD: Khóa học React JS từ cơ bản đến nâng cao">
+                </div>
+                <div class="form-group">
+                    <label>Link khóa học</label>
+                    <input type="url" required placeholder="https://example.com/course-link">
+                </div>
+                <div class="form-group">
+                    <label>Danh mục</label>
+                    <select style="width: 100%; padding: 0.75rem; background: var(--bg-primary); border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 8px; color: var(--text-primary);">
+                        <option>Frontend</option>
+                        <option>Backend</option>
+                        <option>Mobile</option>
+                        <option>AI/ML</option>
+                        <option>DevOps</option>
+                        <option>Database</option>
+                        <option>UI/UX</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Mô tả</label>
+                    <textarea rows="4" placeholder="Mô tả chi tiết về khóa học..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary cursor-pointer" style="width: 100%;">
+                    <i class="fas fa-check"></i> Đăng tải khóa học
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Sample course data
+        const sampleCourses = [
+            {
+                title: "React JS Complete Bootcamp 2024",
+                author: "devmaster_pro",
+                views: 15420,
+                category: "Frontend",
+                icon: "fab fa-react",
+                link: "https://example.com/react-course"
+            },
+            {
+                title: "Node.js & Express Backend Development",
+                author: "backend_guru",
+                views: 12890,
+                category: "Backend",
+                icon: "fab fa-node-js",
+                link: "https://example.com/nodejs-course"
+            },
+            {
+                title: "Python Machine Learning A-Z",
+                author: "ai_researcher",
+                views: 23150,
+                category: "AI/ML",
+                icon: "fab fa-python",
+                link: "https://example.com/python-ml"
+            },
+            {
+                title: "Flutter Mobile App Development",
+                author: "mobile_dev",
+                views: 9560,
+                category: "Mobile",
+                icon: "fas fa-mobile-alt",
+                link: "https://example.com/flutter-course"
+            },
+            {
+                title: "Docker & Kubernetes DevOps",
+                author: "devops_master",
+                views: 18730,
+                category: "DevOps",
+                icon: "fab fa-docker",
+                link: "https://example.com/docker-k8s"
+            },
+            {
+                title: "Next.js Full Stack Development",
+                author: "fullstack_ninja",
+                views: 11240,
+                category: "Frontend",
+                icon: "fas fa-layer-group",
+                link: "https://example.com/nextjs-course"
+            }
+        ];
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeBackgroundAnimation();
+            loadCourses();
+            setupEventListeners();
+            simulateCloudflareProtection();
+        });
+
+        function simulateCloudflareProtection() {
+            // Simulate Cloudflare Turnstile check
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.9);
+                backdrop-filter: blur(10px);
+                z-index: 9999;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex-direction: column;
+                color: white;
+                font-family: 'Fira Code', monospace;
+            `;
+            
+            overlay.innerHTML = `
+                <div style="text-align: center;">
+                    <div style="font-size: 3rem; margin-bottom: 2rem; color: var(--accent-neon);">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h2 style="margin-bottom: 1rem;">Đang xác thực bảo mật</h2>
+                    <p style="margin-bottom: 2rem; color: #888;">Cloudflare đang kiểm tra trình duyệt của bạn...</p>
+                    <div class="loading"></div>
+                </div>
+            `;
+            
+            document.body.appendChild(overlay);
+            
+            setTimeout(() => {
+                overlay.style.opacity = '0';
+                setTimeout(() => overlay.remove(), 500);
+            }, 2000);
+        }
+
+        function initializeBackgroundAnimation() {
+            const container = document.getElementById('bgAnimation');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 10 + 's';
+                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        function loadCourses() {
+            const courseGrid = document.getElementById('courseGrid');
+            const recentGrid = document.getElementById('recentCourses');
+            
+            // Load hot courses
+            sampleCourses.forEach(course => {
+                courseGrid.appendChild(createCourseCard(course));
+            });
+            
+            // Load recent courses (shuffled)
+            const shuffled = [...sampleCourses].sort(() => 0.5 - Math.random());
+            shuffled.slice(0, 4).forEach(course => {
+                recentGrid.appendChild(createCourseCard(course));
+            });
+        }
+
+        function createCourseCard(course) {
+            const card = document.createElement('div');
+            card.className = 'course-card cursor-pointer';
+            card.innerHTML = `
+                <div class="course-image">
+                    <i class="${course.icon}" style="z-index: 1; position: relative;"></i>
+                </div>
+                <div class="course-content">
+                    <h3 class="course-title">${course.title}</h3>
+                    <p class="course-author">by @${course.author}</p>
+                    <div class="course-stats">
+                        <span><i class="fas fa-eye"></i> ${course.views.toLocaleString()}</span>
+                        <span class="course-category">${course.category}</span>
+                    </div>
+                </div>
+            `;
+            
+            card.addEventListener('click', () => {
+                // Simulate course access
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 2rem;
+                    right: 2rem;
+                    background: var(--bg-card);
+                    color: var(--text-primary);
+                    padding: 1rem 2rem;
+                    border-radius: 8px;
+                    border: 1px solid var(--accent-neon);
+                    box-shadow: 0 8px 25px rgba(0, 255, 255, 0.3);
+                    z-index: 3000;
+                    animation: slideIn 0.3s ease;
+                `;
+                notification.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <i class="fas fa-external-link-alt" style="color: var(--accent-neon);"></i>
+                        <div>
+                            <div style="font-weight: 600;">Đang chuyển hướng...</div>
+                            <div style="font-size: 0.8rem; color: var(--text-secondary);">Link: ${course.link}</div>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(notification);
+                setTimeout(() => notification.remove(), 3000);
+            });
+            
+            return card;
+        }
+
+        function setupEventListeners() {
+            // Theme toggle
+            document.getElementById('themeToggle').addEventListener('click', function() {
+                document.body.classList.toggle('light-theme');
+                const icon = this.querySelector('i');
+                icon.className = document.body.classList.contains('light-theme') ? 'fas fa-sun' : 'fas fa-moon';
+            });
+
+            // Modal controls
+            document.getElementById('loginBtn').addEventListener('click', () => {
+                document.getElementById('authModal').style.display = 'flex';
+            });
+
+            document.getElementById('uploadBtn').addEventListener('click', () => {
+                document.getElementById('uploadModal').style.display = 'flex';
+            });
+
+            document.getElementById('closeAuthModal').addEventListener('click', () => {
+                document.getElementById('authModal').style.display = 'none';
+            });
+
+            document.getElementById('closeUploadModal').addEventListener('click', () => {
+                document.getElementById('uploadModal').style.display = 'none';
+            });
+
+            // Auth tabs
+            document.querySelectorAll('.auth-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabName = this.dataset.tab;
+                    
+                    document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+                    
+                    this.classList.add('active');
+                    document.getElementById(tabName + 'Form').classList.add('active');
+                });
+            });
+
+            // Form submissions
+            document.getElementById('loginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const btn = this.querySelector('button[type="submit"]');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<div class="loading"></div> Đang đăng nhập...';
+                btn.disabled = true;
+                
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fas fa-check"></i> Đăng nhập thành công!';
+                    btn.style.background = 'linear-gradient(45deg, #28a745, #20c997)';
+                    
+                    setTimeout(() => {
+                        document.getElementById('authModal').style.display = 'none';
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                        btn.style.background = '';
+                        showNotification('Chào mừng bạn trở lại!', 'success');
+                        updateUIForLoggedInUser();
+                    }, 1500);
+                }, 2000);
+            });
+
+            document.getElementById('registerForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const btn = this.querySelector('button[type="submit"]');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<div class="loading"></div> Đang đăng ký...';
+                btn.disabled = true;
+                
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fas fa-check"></i> Đăng ký thành công!';
+                    btn.style.background = 'linear-gradient(45deg, #28a745, #20c997)';
+                    
+                    setTimeout(() => {
+                        document.getElementById('authModal').style.display = 'none';
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                        btn.style.background = '';
+                        showNotification('Tài khoản đã được tạo thành công!', 'success');
+                        updateUIForLoggedInUser();
+                    }, 1500);
+                }, 2000);
+            });
+
+            document.getElementById('uploadForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const btn = this.querySelector('button[type="submit"]');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<div class="loading"></div> Đang tải lên...';
+                btn.disabled = true;
+                
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fas fa-check"></i> Đăng tải thành công!';
+                    btn.style.background = 'linear-gradient(45deg, #28a745, #20c997)';
+                    
+                    setTimeout(() => {
+                        document.getElementById('uploadModal').style.display = 'none';
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                        btn.style.background = '';
+                        showNotification('Khóa học đã được đăng tải và đang chờ duyệt!', 'success');
+                        this.reset();
+                    }, 1500);
+                }, 2500);
+            });
+
+            // Search functionality
+            document.getElementById('searchInput').addEventListener('input', function(e) {
+                const query = e.target.value.toLowerCase();
+                const cards = document.querySelectorAll('.course-card');
+                
+                cards.forEach(card => {
+                    const title = card.querySelector('.course-title').textContent.toLowerCase();
+                    const author = card.querySelector('.course-author').textContent.toLowerCase();
+                    const category = card.querySelector('.course-category').textContent.toLowerCase();
+                    
+                    if (title.includes(query) || author.includes(query) || category.includes(query)) {
+                        card.style.display = 'block';
+                        card.style.animation = 'slideIn 0.3s ease';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+                
+                if (query) {
+                    showSearchResults(query);
+                }
+            });
+
+            // Close modals when clicking outside
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.style.display = 'none';
+                    }
+                });
+            });
+
+            // Add keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.key === 'k') {
+                    e.preventDefault();
+                    document.getElementById('searchInput').focus();
+                }
+                if (e.key === 'Escape') {
+                    document.querySelectorAll('.modal').forEach(modal => {
+                        modal.style.display = 'none';
+                    });
+                }
+            });
+
+            // Add scroll effects
+            window.addEventListener('scroll', function() {
+                const header = document.querySelector('header');
+                if (window.scrollY > 100) {
+                    header.style.background = 'rgba(26, 26, 46, 0.95)';
+                } else {
+                    header.style.background = 'rgba(26, 26, 46, 0.9)';
+                }
+            });
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            const colors = {
+                success: 'var(--accent-green)',
+                error: '#ff4757',
+                info: 'var(--accent-neon)',
+                warning: '#ffa502'
+            };
+            
+            notification.style.cssText = `
+                position: fixed;
+                top: 2rem;
+                right: 2rem;
+                background: var(--bg-card);
+                color: var(--text-primary);
+                padding: 1rem 2rem;
+                border-radius: 12px;
+                border: 2px solid ${colors[type]};
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+                z-index: 3000;
+                animation: slideInRight 0.3s ease;
+                max-width: 300px;
+                font-family: 'Fira Code', monospace;
+            `;
+            
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-triangle' : 'info-circle'}" 
+                       style="color: ${colors[type]}; font-size: 1.2rem;"></i>
+                    <div style="flex: 1;">${message}</div>
+                    <button onclick="this.parentElement.parentElement.remove()" 
+                            style="background: none; border: none; color: var(--text-secondary); cursor: pointer; padding: 0;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 5000);
+        }
+
+        function updateUIForLoggedInUser() {
+            const loginBtn = document.getElementById('loginBtn');
+            loginBtn.innerHTML = '<i class="fas fa-user"></i> Dashboard';
+            loginBtn.onclick = () => showUserDashboard();
+            
+            // Add logout option
+            const nav = document.querySelector('.nav-buttons');
+            const logoutBtn = document.createElement('button');
+            logoutBtn.className = 'btn btn-secondary cursor-pointer';
+            logoutBtn.innerHTML = '<i class="fas fa-sign-out-alt"></i> Đăng xuất';
+            logoutBtn.onclick = () => {
+                showNotification('Đã đăng xuất thành công!', 'info');
+                location.reload();
+            };
+            nav.insertBefore(logoutBtn, nav.lastElementChild);
+        }
+
+        function showUserDashboard() {
+            const dashboardModal = document.createElement('div');
+            dashboardModal.className = 'modal';
+            dashboardModal.style.display = 'flex';
+            dashboardModal.innerHTML = `
+                <div class="modal-content" style="max-width: 800px; width: 95%;">
+                    <button class="modal-close cursor-pointer" onclick="this.parentElement.parentElement.remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <h3 style="margin-bottom: 2rem; color: var(--accent-neon);">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </h3>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                        <div style="background: var(--bg-primary); padding: 1.5rem; border-radius: 10px; border: 1px solid var(--accent-neon); text-align: center;">
+                            <div style="font-size: 2rem; color: var(--accent-neon); margin-bottom: 0.5rem;">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;">12</div>
+                            <div style="color: var(--text-secondary);">Khóa học đã đăng</div>
+                        </div>
+                        <div style="background: var(--bg-primary); padding: 1.5rem; border-radius: 10px; border: 1px solid var(--accent-purple); text-align: center;">
+                            <div style="font-size: 2rem; color: var(--accent-purple); margin-bottom: 0.5rem;">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                            <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;">45,230</div>
+                            <div style="color: var(--text-secondary);">Tổng lượt xem</div>
+                        </div>
+                        <div style="background: var(--bg-primary); padding: 1.5rem; border-radius: 10px; border: 1px solid var(--accent-green); text-align: center;">
+                            <div style="font-size: 2rem; color: var(--accent-green); margin-bottom: 0.5rem;">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;">4.8</div>
+                            <div style="color: var(--text-secondary);">Đánh giá trung bình</div>
+                        </div>
+                    </div>
+                    
+                    <h4 style="color: var(--accent-neon); margin-bottom: 1rem;">
+                        <i class="fas fa-list"></i> Khóa học của bạn
+                    </h4>
+                    <div style="max-height: 300px; overflow-y: auto;">
+                        ${generateUserCoursesList()}
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(dashboardModal);
+        }
+
+        function generateUserCoursesList() {
+            const userCourses = [
+                { title: "Advanced React Patterns", views: 15420, status: "Đã duyệt" },
+                { title: "Node.js Microservices", views: 8930, status: "Đã duyệt" },
+                { title: "GraphQL Complete Guide", views: 12100, status: "Chờ duyệt" },
+                { title: "TypeScript Best Practices", views: 6780, status: "Đã duyệt" }
+            ];
+            
+            return userCourses.map(course => `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: var(--bg-primary); margin-bottom: 0.5rem; border-radius: 8px; border: 1px solid rgba(0, 255, 255, 0.1);">
+                    <div>
+                        <div style="font-weight: 600; margin-bottom: 0.25rem;">${course.title}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-secondary);">
+                            <i class="fas fa-eye"></i> ${course.views.toLocaleString()} lượt xem
+                        </div>
+                    </div>
+                    <div>
+                        <span style="padding: 0.25rem 0.75rem; border-radius: 15px; font-size: 0.7rem; background: ${course.status === 'Đã duyệt' ? 'rgba(40, 167, 69, 0.2)' : 'rgba(255, 193, 7, 0.2)'}; color: ${course.status === 'Đã duyệt' ? '#28a745' : '#ffc107'};">
+                            ${course.status}
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showSearchResults(query) {
+            const resultsContainer = document.createElement('div');
+            resultsContainer.style.cssText = `
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: var(--bg-card);
+                border: 1px solid var(--accent-neon);
+                border-radius: 0 0 12px 12px;
+                max-height: 300px;
+                overflow-y: auto;
+                z-index: 1000;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            `;
+            
+            // Simulate search suggestions
+            const suggestions = [
+                "React Hooks Advanced",
+                "React Router v6",
+                "React Testing Library",
+                "React Native Development",
+                "Redux Toolkit Modern"
+            ].filter(s => s.toLowerCase().includes(query));
+            
+            resultsContainer.innerHTML = suggestions.map(suggestion => `
+                <div style="padding: 1rem; border-bottom: 1px solid rgba(0, 255, 255, 0.1); cursor: pointer; transition: background 0.2s;" 
+                     onmouseover="this.style.background='rgba(0, 255, 255, 0.1)'" 
+                     onmouseout="this.style.background='transparent'"
+                     onclick="document.getElementById('searchInput').value='${suggestion}'; this.parentElement.remove();">
+                    <i class="fas fa-search" style="color: var(--accent-neon); margin-right: 0.5rem;"></i>
+                    ${suggestion}
+                </div>
+            `).join('');
+            
+            const searchContainer = document.querySelector('.search-container');
+            const existingResults = searchContainer.querySelector('div[style*="position: absolute"]');
+            if (existingResults) existingResults.remove();
+            
+            if (suggestions.length > 0) {
+                searchContainer.appendChild(resultsContainer);
+                searchContainer.style.position = 'relative';
+                
+                // Auto-remove after 5 seconds
+                setTimeout(() => {
+                    if (resultsContainer.parentElement) {
+                        resultsContainer.remove();
+                    }
+                }, 5000);
+            }
+        }
+
+        // Add CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            
+            @keyframes slideInRight {
+                from { opacity: 0; transform: translateX(100%); }
+                to { opacity: 1; transform: translateX(0); }
+            }
+            
+            @keyframes slideOutRight {
+                from { opacity: 1; transform: translateX(0); }
+                to { opacity: 0; transform: translateX(100%); }
+            }
+            
+            .course-card {
+                animation: slideIn 0.6s ease forwards;
+            }
+            
+            .course-card:nth-child(even) {
+                animation-delay: 0.1s;
+            }
+            
+            .course-card:nth-child(3n) {
+                animation-delay: 0.2s;
+            }
+
+            /* Admin Panel Styles */
+            .admin-badge {
+                background: linear-gradient(45deg, #ff6b6b, #feca57);
+                color: white;
+                padding: 0.25rem 0.5rem;
+                border-radius: 12px;
+                font-size: 0.7rem;
+                font-weight: bold;
+                animation: rainbow 3s infinite;
+            }
+
+            @keyframes rainbow {
+                0% { filter: hue-rotate(0deg); }
+                50% { filter: hue-rotate(180deg); }
+                100% { filter: hue-rotate(360deg); }
+            }
+
+            /* Footer */
+            footer {
+                background: var(--bg-secondary);
+                border-top: 1px solid var(--border-glow);
+                padding: 2rem;
+                text-align: center;
+                margin-top: 4rem;
+            }
+
+            .footer-content {
+                max-width: 1200px;
+                margin: 0 auto;
+                color: var(--text-secondary);
+            }
+
+            .footer-links {
+                display: flex;
+                justify-content: center;
+                gap: 2rem;
+                margin-bottom: 1rem;
+                flex-wrap: wrap;
+            }
+
+            .footer-links a {
+                color: var(--accent-neon);
+                text-decoration: none;
+                transition: all 0.3s ease;
+            }
+
+            .footer-links a:hover {
+                text-shadow: 0 0 10px var(--accent-neon);
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Add footer
+        const footer = document.createElement('footer');
+        footer.innerHTML = `
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="#" class="cursor-pointer">Về chúng tôi</a>
+                    <a href="#" class="cursor-pointer">Điều khoản</a>
+                    <a href="#" class="cursor-pointer">Bảo mật</a>
+                    <a href="#" class="cursor-pointer">Hỗ trợ</a>
+                    <a href="#" class="cursor-pointer">API</a>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <i class="fas fa-heart" style="color: #ff6b6b;"></i>
+                    Made with love by the dev community
+                </div>
+                <div style="font-size: 0.8rem;">
+                    © 2024 CourseHub Infinity. Powered by Cloudflare & secured with 💪
+                </div>
+            </div>
+        `;
+        document.body.appendChild(footer);
+
+        // Initialize tooltips
+        function initializeTooltips() {
+            const tooltipElements = document.querySelectorAll('[data-tooltip]');
+            tooltipElements.forEach(element => {
+                element.addEventListener('mouseenter', function(e) {
+                    const tooltip = document.createElement('div');
+                    tooltip.className = 'tooltip';
+                    tooltip.textContent = this.dataset.tooltip;
+                    tooltip.style.cssText = `
+                        position: absolute;
+                        background: var(--bg-card);
+                        color: var(--text-primary);
+                        padding: 0.5rem 1rem;
+                        border-radius: 6px;
+                        font-size: 0.8rem;
+                        border: 1px solid var(--accent-neon);
+                        z-index: 4000;
+                        pointer-events: none;
+                        animation: slideIn 0.2s ease;
+                    `;
+                    
+                    document.body.appendChild(tooltip);
+                    
+                    const rect = this.getBoundingClientRect();
+                    tooltip.style.left = rect.left + 'px';
+                    tooltip.style.top = (rect.top - tooltip.offsetHeight - 10) + 'px';
+                });
+                
+                element.addEventListener('mouseleave', function() {
+                    const tooltip = document.querySelector('.tooltip');
+                    if (tooltip) tooltip.remove();
+                });
+            });
+        }
+
+        // Performance monitoring
+        function monitorPerformance() {
+            if ('performance' in window) {
+                window.addEventListener('load', function() {
+                    const perfData = performance.timing;
+                    const loadTime = perfData.loadEventEnd - perfData.navigationStart;
+                    console.log(`%c🚀 CourseHub Infinity loaded in ${loadTime}ms`, 
+                              'color: #00ffff; font-size: 14px; font-weight: bold;');
+                });
+            }
+        }
+
+        monitorPerformance();
+    </script>
+</body>
+</html>
