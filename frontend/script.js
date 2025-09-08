@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // URL của backend server (thay bằng URL của bạn trên Render.com)
-    const API_URL = 'http://localhost:3000'; // Hoặc 'https://your-backend-name.onrender.com'
+    const API_URL = 'https://coursehub-x7v8.onrender.com'; // Hoặc 'https://your-backend-name.onrender.com'
 
     let currentUser = null;
 
