@@ -1,4 +1,89 @@
-<!DOCTYPE html>
+function createCourseCard(course) {
+            document.getElementById('loginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const btn = this.querySelector('button[type="submit"]');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<div class="loading"></div> Đang đăng nhập...';
+                btn.disabled = true;
+                
+                const email = this.querySelector('input[type="text"]').value;
+                
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fas fa-check"></i> Đăng nhập thành công!';
+                    btn.style.background = 'linear-gradient(45deg, #28a745, #20c997)';
+                    
+                    // Set current user based on login
+                    if (email === 'admindeptrai' || email === 'chungdayy2006@gmail.com') {
+                        currentUser = {
+                            id: 'admin',
+                            username: 'admindeptrai',
+                            email: 'chungdayy2006@gmail.com',
+                            role: userRoles.ADMIN
+                        };
+                        document.body.classList.add('cursor-admin');
+                    } else {
+                        currentUser = {
+                            id: 'user123',
+                            username: email.split('@')[0] || email,
+                            email: email,
+                            role: userRoles.MEMBER
+                        };
+                    }
+                    
+                    setTimeout(() => {
+                        document.getElementById('authModal').style.display = 'none';
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                        btn.style.background = '';
+                        showNotification(`Chào mừng ${currentUser.role === userRoles.ADMIN ? 'Admin' : 'bạn'} trở lại!`, 'success');
+                        updateUIForLoggedInUser();
+                        // Reload courses to show management options
+                        document.getElementById('courseGrid').innerHTML = '';
+                        document.getElementById('recentCourses').innerHTML = '';
+                        loadCourses();
+                    }, 1500);
+                }, 2000);
+            });const card = document.createElement('div');
+            card.className = 'course-card cursor-pointer';
+            card.dataset.courseId = course.id;
+            card.dataset.ownerId = course.ownerId;
+            
+            const canEdit = currentUser && (currentUser.id === course.ownerId || currentUser.role === userRoles.ADMIN);
+            const canDelete = currentUser && (currentUser.id === course.ownerId || currentUser.role === userRoles.ADMIN);
+            const isOwner = currentUser && currentUser.id === course.ownerId;
+            const isAdmin = currentUser && currentUser.role === userRoles.ADMIN;
+            
+            card.innerHTML = `
+                <div class="course-image">
+                    <i class="${course.icon}" style="z-index: 1; position: relative;"></i>
+                </div>
+                <div class="course-content">
+                    <h3 class="course-title">${course.title}</h3>
+                    <p class="course-author">by @${course.author}</p>
+                    <div class="course-stats">
+                        <span><i class="fas fa-eye"></i> ${course.views.toLocaleString()}</span>
+                        <span class="course-category">${course.category}</span>
+                    </div>
+                </div>
+                ${canEdit || canDelete ? `
+                <div class="course-actions">
+                    ${canEdit ? `<button class="action-btn edit-btn cursor-pointer" onclick="editCourse(${course.id})" title="Chỉnh sửa">
+                        <i class="fas fa-edit"></i>
+                    </button>` : ''}
+                    ${canDelete ? `<button class="action-btn delete-btn cursor-delete" onclick="confirmDeleteCourse(${course.id})" title="Xóa khóa học">
+                        <i class="fas fa-trash"></i>
+                    </button>` : ''}
+                    ${isAdmin && !isOwner ? `<button class="action-btn admin-btn cursor-admin" onclick="adminAction(${course.id})" title="Quản lý admin">
+                        <i class="fas fa-crown"></i>
+                    </button>` : ''}
+                </div>
+                ` : ''}
+                ${isOwner ? `<div class="user-badge owner-badge">
+                    <i class="fas fa-user"></i> Của bạn
+                </div>` : ''}
+                ${isAdmin && !isOwner ? `<div class="user-badge admin-badge">
+                    <i class="fas fa-shield-alt"></i> ADMIN
+                </div>` : ''}<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -1018,20 +1103,164 @@
 
         function updateUIForLoggedInUser() {
             const loginBtn = document.getElementById('loginBtn');
-            loginBtn.innerHTML = '<i class="fas fa-user"></i> Dashboard';
+            const navButtons = document.querySelector('.nav-buttons');
+            
+            // Update login button
+            loginBtn.innerHTML = `<i class="fas fa-user-circle"></i> ${currentUser.username}`;
             loginBtn.onclick = () => showUserDashboard();
             
-            // Add logout option
-            const nav = document.querySelector('.nav-buttons');
-            const logoutBtn = document.createElement('button');
-            logoutBtn.className = 'btn btn-secondary cursor-pointer';
-            logoutBtn.innerHTML = '<i class="fas fa-sign-out-alt"></i> Đăng xuất';
-            logoutBtn.onclick = () => {
-                showNotification('Đã đăng xuất thành công!', 'info');
-                location.reload();
-            };
-            nav.insertBefore(logoutBtn, nav.lastElementChild);
+            // Add role indicator
+            if (currentUser.role === userRoles.ADMIN) {
+                loginBtn.innerHTML = `<i class="fas fa-crown"></i> ${currentUser.username}`;
+                loginBtn.style.background = 'linear-gradient(45deg, #ffd700, #ffed4a)';
+                loginBtn.style.color = '#000';
+                loginBtn.classList.add('cursor-admin');
+            }
+            
+            // Add logout option if not exists
+            if (!document.getElementById('logoutBtn')) {
+                const logoutBtn = document.createElement('button');
+                logoutBtn.id = 'logoutBtn';
+                logoutBtn.className = 'btn btn-secondary cursor-pointer';
+                logoutBtn.innerHTML = '<i class="fas fa-sign-out-alt"></i> Đăng xuất';
+                logoutBtn.onclick = () => {
+                    currentUser = null;
+                    isAdminMode = false;
+                    selectedCourses.clear();
+                    document.body.classList.remove('cursor-admin');
+                    document.querySelector('.management-mode').classList.remove('active');
+                    document.querySelector('.bulk-actions').classList.remove('show');
+                    showNotification('Đã đăng xuất thành công!', 'info');
+                    location.reload();
+                };
+                navButtons.insertBefore(logoutBtn, navButtons.lastElementChild);
+            }
         }
+
+        function getCategoryIcon(category) {
+            const icons = {
+                'Frontend': 'fab fa-react',
+                'Backend': 'fab fa-node-js',
+                'Mobile': 'fas fa-mobile-alt',
+                'AI/ML': 'fab fa-python',
+                'DevOps': 'fab fa-docker',
+                'Database': 'fas fa-database',
+                'UI/UX': 'fas fa-paint-brush'
+            };
+            return icons[category] || 'fas fa-book';
+        }
+
+        // Additional admin functions
+        function toggleFeatured(courseId) {
+            const course = sampleCourses.find(c => c.id === courseId);
+            if (course) {
+                course.featured = !course.featured;
+                showNotification(
+                    course.featured ? 'Khóa học đã được đánh dấu nổi bật!' : 'Đã bỏ đánh dấu nổi bật!',
+                    'success'
+                );
+                document.querySelector('.modal').remove();
+            }
+        }
+
+        function hideCourse(courseId) {
+            const course = sampleCourses.find(c => c.id === courseId);
+            if (course) {
+                course.hidden = !course.hidden;
+                showNotification(
+                    course.hidden ? 'Khóa học đã được ẩn!' : 'Khóa học đã được hiện!',
+                    'success'
+                );
+                document.querySelector('.modal').remove();
+                
+                // Hide/show course card
+                const courseCard = document.querySelector(`[data-course-id="${courseId}"]`);
+                if (courseCard) {
+                    courseCard.style.opacity = course.hidden ? '0.3' : '1';
+                    courseCard.style.filter = course.hidden ? 'grayscale(100%)' : 'none';
+                }
+            }
+        }
+
+        function banUser(userId) {
+            const confirmBan = confirm('Bạn có chắc chắn muốn khóa tài khoản người dùng này không?');
+            if (confirmBan) {
+                // In a real app, this would ban the user
+                showNotification('Tài khoản đã được khóa trong 7 ngày!', 'warning');
+                document.querySelector('.modal').remove();
+            }
+        }
+
+        // Add CSS animations for delete effect
+        const deleteStyle = document.createElement('style');
+        deleteStyle.textContent = `
+            @keyframes fadeOut {
+                from { opacity: 1; transform: scale(1); }
+                to { opacity: 0; transform: scale(0.8); }
+            }
+            
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-5px); }
+                75% { transform: translateX(5px); }
+            }
+            
+            .course-card.deleting {
+                animation: shake 0.3s ease-in-out, fadeOut 0.5s ease-in-out 0.3s forwards;
+                pointer-events: none;
+            }
+            
+            /* Enhanced cursor animations */
+            .cursor-pointer:hover {
+                animation: cursorPulse 0.5s ease-in-out;
+            }
+            
+            @keyframes cursorPulse {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+            }
+            
+            /* Special admin cursor effects */
+            .cursor-admin:hover {
+                animation: adminGlow 0.8s ease-in-out infinite alternate;
+            }
+            
+            @keyframes adminGlow {
+                from { 
+                    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+                    transform: scale(1);
+                }
+                to { 
+                    box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+                    transform: scale(1.02);
+                }
+            }
+            
+            /* Delete button special effects */
+            .delete-btn:hover {
+                animation: dangerPulse 0.3s ease-in-out infinite alternate;
+            }
+            
+            @keyframes dangerPulse {
+                from { 
+                    box-shadow: 0 0 15px rgba(255, 71, 87, 0.5);
+                }
+                to { 
+                    box-shadow: 0 0 25px rgba(255, 71, 87, 0.8);
+                }
+            }
+            
+            /* Upload button effects */
+            .cursor-upload:hover {
+                animation: uploadBounce 0.6s ease-in-out infinite alternate;
+            }
+            
+            @keyframes uploadBounce {
+                from { transform: translateY(0); }
+                to { transform: translateY(-3px); }
+            }
+        `;
+        document.head.appendChild(deleteStyle);
 
         function showUserDashboard() {
             const dashboardModal = document.createElement('div');
